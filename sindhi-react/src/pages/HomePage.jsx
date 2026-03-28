@@ -171,18 +171,18 @@ const HomePage = () => {
                             View All <ArrowRight size={16} />
                         </Link>
                     </div>
-                </div>
 
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
-                    {displayProducts.map(product => (
-                        <ProductCard key={product.id} product={product} />
-                    ))}
-                </div>
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
+                        {displayProducts.map(product => (
+                            <ProductCard key={product.id} product={product} />
+                        ))}
+                    </div>
 
-                <div className="text-center mt-8 md:hidden">
-                    <Link to="/products" className="text-primary font-semibold hover:underline">
-                        View All Products →
-                    </Link>
+                    <div className="text-center mt-12 md:hidden">
+                        <Link to="/products" className="text-primary font-semibold hover:underline">
+                            View All Products →
+                        </Link>
+                    </div>
                 </div>
             </div>
 

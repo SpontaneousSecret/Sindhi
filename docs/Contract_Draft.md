@@ -24,7 +24,7 @@ The Service Provider agrees to design and develop a web-based e-commerce platfor
 ### 2.2. User Features
 -   Responsive Design (Mobile/Desktop).
 -   Shopping Cart functionality.
--   Checkout process restricted to **Cash on Delivery (COD)** only. No online payment gateway integration is included in this phase.
+-   Checkout process includes **Cash on Delivery (COD)** and **Online Payments** via Axis Bank Payment Gateway integration.
 
 ### 2.3. Admin Dashboard
 -   Secure Login for Super Admin.
@@ -81,6 +81,10 @@ The system will support the following time-slot based delivery options:
     -   Remaining balance due upon completion/handover.
 2.  **Intellectual Property**: Upon full payment, the Client gets full ownership of the formulated code and designs.
 3.  **Warranty**: A [Insert Days, e.g., 30-day] support period is provided post-launch for bug fixes related to the scope of work.
+4.  **Payment Gateway Terms and Liability**: 
+    -   **Axis Bank Integration**: The Service Provider shall integrate the Axis Bank Payment Gateway for the processing of online transactions.
+    -   **Gateway Removal and Modification**: In the event that the Client requests the removal or decoupling of the payment gateway from the platform at any future date, a specialized engineering and reconfiguration fee of **INR 3,500 to INR 4,000** shall be payable by the Client. Such removal process necessitates a scheduled platform suspension of **7 to 10 business days** to ensure structural integrity and security compliance.
+    -   **Limitation of Liability**: The Service Provider’s responsibility is limited to the technical integration of the payment gateway. The Service Provider shall not be held liable for any disputes, delays, processing errors, settlement failures, or transaction issues arising within the banking infrastructure. Any and all matters related to payment clearances and fund settlements are the exclusive responsibility of **Axis Bank**.
 
 ---
 

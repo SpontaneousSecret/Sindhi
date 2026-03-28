@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useProductContext } from '../context/ProductContext';
 import { useSearchParams } from 'react-router-dom';
 import { Filter, Search, X, ChevronDown, ChevronRight } from 'lucide-react';
+import ProductCard from '../components/products/ProductCard';
 
 const ProductsPage = () => {
     const { products, addToCart } = useProductContext();
@@ -98,7 +99,7 @@ const ProductsPage = () => {
 
     return (
         <div className="min-h-screen bg-bg-primary pt-24 pb-12">
-            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="max-w-[1200px] mx-auto px-4 sm:px-6 lg:px-8">
 
                 {/* Mobile Filter Toggle */}
                 <div className="lg:hidden mb-4 flex gap-2">
@@ -232,32 +233,9 @@ const ProductsPage = () => {
 
                         {/* Product Grid */}
                         {filteredProducts.length > 0 ? (
-                            <div className="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-4 md:gap-6">
+                            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3 gap-8">
                                 {filteredProducts.map((product) => (
-                                    <div key={product.id || product.name} className="bg-white rounded-2xl p-4 shadow-sm hover:shadow-md transition-shadow border border-neutral-100 flex flex-col group">
-                                        <div className="aspect-square rounded-xl bg-neutral-50 mb-4 overflow-hidden relative">
-                                            <img
-                                                src={product.image}
-                                                alt={product.name}
-                                                className="w-full h-full object-contain mix-blend-multiply p-4 group-hover:scale-110 transition-transform duration-500"
-                                            />
-                                        </div>
-                                        <div className="flex-1 flex flex-col">
-                                            <h3 className="font-bold text-neutral-800 mb-1 line-clamp-2">{product.name}</h3>
-                                            <p className="text-xs text-neutral-500 mb-3">{product.category}</p>
-
-                                            <div className="mt-auto flex items-center justify-between">
-                                                <span className="text-lg font-bold text-primary">₹{product.price}</span>
-                                                <button
-                                                    onClick={() => addToCart(product)}
-                                                    className="w-8 h-8 flex items-center justify-center bg-primary text-white rounded-full hover:bg-primary-600 transition-colors shadow-sm"
-                                                    disabled={!product.inStock}
-                                                >
-                                                    +
-                                                </button>
-                                            </div>
-                                        </div>
-                                    </div>
+                                    <ProductCard key={product.id || product.name} product={product} />
                                 ))}
                             </div>
                         ) : (

@@ -1,5 +1,6 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { getProducts, getCategories, createOrder, handleApiError, adminLogin as apiAdminLogin, adminLogout as apiAdminLogout, verifyAdminSession } from '../services/api';
+import { PRODUCTS as LOCAL_PRODUCTS, CATEGORIES as LOCAL_CATEGORIES } from '../data/products';
 
 const ProductContext = createContext();
 
@@ -19,7 +20,12 @@ export const ProductProvider = ({ children }) => {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
 
-    // Fetch Products from API
+    // Build a name->image lookup from local data for image fallback
+    const localImageMap = Object.fromEntries(
+        LOCAL_PRODUCTS.map(p => [p.name, p.image])
+    );
+
+    // Fetch Products from API, falling back to local data if unavailable
     const fetchProducts = async () => {
         try {
             setLoading(true);
@@ -29,6 +35,7 @@ export const ProductProvider = ({ children }) => {
             const response = await getProducts({ page_size: 1000 });
 
             // Transform API response to match frontend format
+            // Use local image when backend image_url is missing
             const transformedProducts = response.results.map(product => ({
                 id: product.id,
                 name: product.name,
@@ -37,7 +44,7 @@ export const ProductProvider = ({ children }) => {
                 price: parseFloat(product.price),
                 effectivePrice: parseFloat(product.effective_price),
                 discount: parseFloat(product.effective_discount),
-                image: product.image_url || '/assets/namkeen.png',
+                image: product.image_url || localImageMap[product.name] || 'assets/products/dry_fruit_mix.png',
                 description: product.short_description || '',
                 in_stock: product.in_stock,
                 stock_quantity: product.stock_quantity,
@@ -47,8 +54,25 @@ export const ProductProvider = ({ children }) => {
 
             setProducts(transformedProducts);
         } catch (err) {
-            console.error('Failed to fetch products:', err);
-            setError(handleApiError(err));
+            // Backend unavailable — use local products.js data directly
+            console.warn('Backend unavailable. Loading from local product data.');
+            const localProducts = LOCAL_PRODUCTS.map((product, index) => ({
+                id: index + 1,
+                name: product.name,
+                slug: product.name.toLowerCase().replace(/[^a-z0-9]+/g, '-'),
+                category: product.category,
+                price: product.price,
+                effectivePrice: product.price,
+                discount: 0,
+                image: product.image,
+                description: '',
+                in_stock: true,
+                stock_quantity: 99,
+                isFeatured: false,
+                weight: '',
+            }));
+            setProducts(localProducts);
+            setError(null); // Don't show error — local data works fine
         } finally {
             setLoading(false);
         }
@@ -58,7 +82,7 @@ export const ProductProvider = ({ children }) => {
         fetchProducts();
     }, []);
 
-    // Fetch Categories from API
+    // Fetch Categories from API, falling back to local data
     const fetchCategories = async () => {
         try {
             setLoading(true);
@@ -74,11 +98,43 @@ export const ProductProvider = ({ children }) => {
             const categoryNames = categoryData.map(cat => cat.name);
             setCategories(['All', ...categoryNames]);
         } catch (err) {
-            console.error('Failed to fetch categories:', err);
-            setError(handleApiError(err));
-            // Fallback to 'All' if categories fail to load
-            setCategories(['All']);
-            setFullCategories([]);
+            // Backend unavailable — derive categories from local data
+            console.warn('Backend unavailable. Loading categories from local data.');
+            
+            const localCategoryImages = {
+                'Chana & Peanut': 'assets/products/chana_peanut.png',
+                'Chips & Wafers': 'assets/products/chips_wafers.png',
+                'Dry Fruit': 'assets/products/almonds.png',
+                'Fryums': 'assets/products/fryums.png',
+                'Gachak & Laddoo': 'assets/products/gachak_laddoo.png',
+                'Golgappe': 'assets/products/golgappe.png',
+                'Healthy Snacks': 'assets/products/healthy_snacks.png',
+                'Important Dry Fruits': 'assets/products/dry_fruit_mix.png',
+                'Imported Dates': 'assets/products/dates.png',
+                'Imported Dry Fruit': 'assets/products/berries_mix.png',
+                'Jaggery': 'assets/products/jaggery.png',
+                'Khakhra': 'assets/products/khakhra.png',
+                'Makhana': 'assets/products/makhana.png',
+                'Moongfali Roasted': 'assets/products/moongfali_roasted.png',
+                'Mouth Freshener': 'assets/products/mouth_freshener.png',
+                'Navratra Special': 'assets/products/navratra_special.png',
+                'Papad & Badiya': 'assets/products/papad_badi.png',
+                'Regular Namkeen': 'assets/products/namkeen_mix.png',
+                'Roasted Chips': 'assets/products/roasted_chips.png',
+                'Seeds': 'assets/products/seeds.png',
+                'Special Achar (Pickle)': 'assets/products/pickle_achar.png',
+                'Special Cookies': 'assets/products/cookies_rusk.png',
+                'Special Matthi': 'assets/products/matthi_namkeen.png',
+                'Spices (Masale)': 'assets/products/spices_masale.png'
+            };
+
+            const localCategoryNames = [...new Set(LOCAL_PRODUCTS.map(p => p.category))].sort();
+            setCategories(['All', ...localCategoryNames]);
+            setFullCategories(localCategoryNames.map(name => ({ 
+                name, 
+                image_url: `/${localCategoryImages[name] || 'assets/products/dry_fruit_mix.png'}` 
+            })));
+            setError(null);
         } finally {
             setLoading(false);
         }

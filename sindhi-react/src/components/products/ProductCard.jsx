@@ -8,43 +8,47 @@ const ProductCard = ({ product }) => {
     return (
         <div className="group bg-white rounded-[1rem] overflow-hidden shadow-lg hover:shadow-2xl hover:-translate-y-2 transition-all duration-500 border border-neutral-100 flex flex-col h-full">
 
-            {/* Image Container - Matches HTML height 280px */}
-            <div className="relative h-[280px] w-full overflow-hidden bg-neutral-100">
-                <span className="absolute top-4 left-4 z-10 bg-primary/95 backdrop-blur-sm px-4 py-1.5 rounded-full text-[0.7rem] font-bold tracking-widest uppercase text-white shadow-md">
+            {/* Image Container - Using aspect-ratio for better responsiveness */}
+            <div className="relative aspect-[4/3] w-full overflow-hidden bg-neutral-50">
+                <span className="absolute top-3 left-3 z-10 bg-primary/95 backdrop-blur-sm px-3 py-1 rounded-full text-[0.65rem] font-bold tracking-widest uppercase text-white shadow-sm">
                     {product.category}
                 </span>
 
                 <img
-                    src={`/assets/${product.image.split('/').pop()}`}
+                    src={`/${product.image}`}
                     alt={product.name}
                     className="w-full h-full object-cover transform group-hover:scale-110 transition-transform duration-700 ease-in-out"
                     loading="lazy"
                 />
             </div>
 
-            {/* Content - Matches HTML padding 2rem (32px) */}
-            <div className="p-8 flex-grow flex flex-col">
+            {/* Content - Reduced padding to p-5 (20px) for better space utilization */}
+            <div className="p-5 flex-grow flex flex-col">
                 <div className="flex-grow">
-                    <h3 className="font-display text-2xl font-bold text-neutral-900 leading-tight mb-3 line-clamp-2">
+                    <h3 className="font-display text-xl font-bold text-neutral-900 leading-snug mb-2 line-clamp-2 mix-blend-multiply">
                         {product.name}
                     </h3>
 
-                    <div className="mb-6 font-normal leading-relaxed text-base text-neutral-600">
-                        <span className="line-clamp-2">
+                    <div className="mb-4">
+                        <span className="text-sm text-neutral-500 line-clamp-2 leading-relaxed">
                             Premium quality {product.name.toLowerCase()}. Fresh and authentic.
                         </span>
-                        <div className="mt-2 text-neutral-900">
-                            <strong className="text-lg">₹{product.price}</strong>{' '}
-                            <small className="text-neutral-500 text-sm">({Math.floor(Math.random() * 200) + 50} reviews)</small>
+                        <div className="mt-3 flex items-center gap-2">
+                            <strong className="text-xl text-primary font-bold">₹{product.price}</strong>
+                            <small className="text-neutral-400 text-xs">({Math.floor(Math.random() * 200) + 50} reviews)</small>
                         </div>
                     </div>
                 </div>
 
-                <div className="pt-0">
+                <div className="mt-auto pt-4 border-t border-neutral-100">
                     <button
-                        onClick={() => addToCart(product)}
-                        className="w-full bg-gradient-to-br from-primary to-primary-600 text-white py-2 rounded-full font-bold text-sm tracking-widest uppercase hover:shadow-lg hover:shadow-primary/30 transition-all duration-300 flex items-center justify-center group/btn"
+                        onClick={(e) => {
+                            e.preventDefault();
+                            addToCart(product);
+                        }}
+                        className="w-full bg-neutral-900 text-white py-2.5 rounded-lg flex items-center justify-center gap-2 font-bold text-sm tracking-wide hover:bg-primary transition-colors duration-300 group/btn"
                     >
+                        <ShoppingBag size={16} className="text-white group-hover/btn:scale-110 transition-transform" />
                         Add to Cart
                     </button>
                 </div>
