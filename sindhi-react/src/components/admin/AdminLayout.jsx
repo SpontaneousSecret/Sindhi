@@ -6,6 +6,7 @@ import {
     Package,
     FolderOpen,
     ShoppingCart,
+    Tag,
     LogOut,
     Menu,
     X,
@@ -28,6 +29,7 @@ const AdminLayout = ({ children }) => {
         { path: '/admin/products', icon: Package, label: 'Products' },
         { path: '/admin/categories', icon: FolderOpen, label: 'Categories' },
         { path: '/admin/orders', icon: ShoppingCart, label: 'Orders' },
+        { path: '/admin/festive-offers', icon: Tag, label: 'Festive Offers' },
     ];
 
     return (
@@ -68,8 +70,8 @@ const AdminLayout = ({ children }) => {
                                 key={item.path}
                                 to={item.path}
                                 className={`flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-200 ${isActive
-                                        ? 'bg-gradient-to-r from-primary to-orange-600 shadow-lg shadow-primary/30'
-                                        : 'hover:bg-neutral-700/50'
+                                    ? 'bg-gradient-to-r from-primary to-orange-600 shadow-lg shadow-primary/30'
+                                    : 'hover:bg-neutral-700/50'
                                     }`}
                             >
                                 <Icon className="h-5 w-5 flex-shrink-0" />

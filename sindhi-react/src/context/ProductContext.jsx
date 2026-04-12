@@ -46,6 +46,19 @@ export const ProductProvider = ({ children }) => {
             }));
 
             setProducts(transformedProducts);
+
+            // Sync cart prices against fresh product data so discounts
+            // (added or removed) are reflected immediately.
+            setCart(prevCart => prevCart.map(cartItem => {
+                const fresh = transformedProducts.find(p => p.id === cartItem.id);
+                if (!fresh) return cartItem;
+                return {
+                    ...cartItem,
+                    price: fresh.price,
+                    effectivePrice: fresh.effectivePrice,
+                    discount: fresh.discount,
+                };
+            }));
         } catch (err) {
             console.error('Failed to fetch products:', err);
             setError(handleApiError(err));

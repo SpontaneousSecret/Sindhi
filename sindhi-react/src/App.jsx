@@ -10,6 +10,7 @@ import AdminDashboard from './pages/admin/Dashboard';
 import ProductManagement from './pages/admin/ProductManagement';
 import CategoryManagement from './pages/admin/CategoryManagement';
 import OrderManagement from './pages/admin/OrderManagement';
+import FestiveOffers from './pages/admin/FestiveOffers';
 import ProtectedRoute from './components/admin/ProtectedRoute';
 
 function App() {
@@ -31,6 +32,7 @@ function App() {
             <Route path="/admin/products" element={<ProductManagement />} />
             <Route path="/admin/categories" element={<CategoryManagement />} />
             <Route path="/admin/orders" element={<OrderManagement />} />
+            <Route path="/admin/festive-offers" element={<FestiveOffers />} />
           </Route>
         </Routes>
       </Router>

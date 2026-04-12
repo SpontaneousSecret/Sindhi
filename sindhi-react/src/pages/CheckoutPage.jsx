@@ -306,7 +306,12 @@ const CheckoutPage = () => {
                                             <span className="text-neutral-500">{item.quantity}x</span>
                                             <span className="text-neutral-800 line-clamp-1">{item.name}</span>
                                         </div>
-                                        <span className="font-medium">₹{item.price * item.quantity}</span>
+                                        <div className="text-right">
+                                            <span className="font-medium">₹{(item.effectivePrice * item.quantity).toFixed(0)}</span>
+                                            {item.discount > 0 && (
+                                                <span className="block text-xs text-neutral-400 line-through">₹{(item.price * item.quantity).toFixed(0)}</span>
+                                            )}
+                                        </div>
                                     </div>
                                 ))}
                             </div>

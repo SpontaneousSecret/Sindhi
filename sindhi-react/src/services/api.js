@@ -315,6 +315,64 @@ export const deleteCategory = async (categoryId) => {
     }
 };
 
+// ==================== FESTIVE OFFERS API (ADMIN) ====================
+
+export const getFestiveOffers = async () => {
+    try {
+        const response = await api.get('/festive-offers/');
+        return response.data;
+    } catch (error) {
+        throw new Error('Failed to fetch festive offers');
+    }
+};
+
+export const createFestiveOffer = async (data) => {
+    try {
+        const response = await api.post('/festive-offers/', data);
+        return response.data;
+    } catch (error) {
+        if (error.response?.data) throw error.response.data;
+        throw new Error('Failed to create festive offer');
+    }
+};
+
+export const updateFestiveOffer = async (id, data) => {
+    try {
+        const response = await api.patch(`/festive-offers/${id}/`, data);
+        return response.data;
+    } catch (error) {
+        if (error.response?.data) throw error.response.data;
+        throw new Error('Failed to update festive offer');
+    }
+};
+
+export const deleteFestiveOffer = async (id) => {
+    try {
+        await api.delete(`/festive-offers/${id}/`);
+    } catch (error) {
+        throw new Error('Failed to delete festive offer');
+    }
+};
+
+export const applyFestiveOffer = async (id) => {
+    try {
+        const response = await api.post(`/festive-offers/${id}/apply/`);
+        return response.data;
+    } catch (error) {
+        if (error.response?.data) throw error.response.data;
+        throw new Error('Failed to apply festive offer');
+    }
+};
+
+export const deactivateFestiveOffer = async (id) => {
+    try {
+        const response = await api.post(`/festive-offers/${id}/deactivate/`);
+        return response.data;
+    } catch (error) {
+        throw new Error('Failed to deactivate festive offer');
+    }
+};
+
 // ==================== UTILITY FUNCTIONS ====================
 
 /**

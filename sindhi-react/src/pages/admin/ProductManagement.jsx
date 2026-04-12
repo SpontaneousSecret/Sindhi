@@ -13,7 +13,7 @@ import {
     AlertCircle,
     CheckCircle
 } from 'lucide-react';
-import { createProduct, updateProduct, deleteProduct } from '../../services/api';
+import { createProduct, updateProduct, deleteProduct, getCategories } from '../../services/api';
 
 const ProductManagement = () => {
     const { products, loading: contextLoading, fetchProducts } = useProductContext();
@@ -21,6 +21,7 @@ const ProductManagement = () => {
     const [showModal, setShowModal] = useState(false);
     const [editingProduct, setEditingProduct] = useState(null);
     const [deleteConfirm, setDeleteConfirm] = useState(null);
+    const [categories, setCategories] = useState([]);
     const [formData, setFormData] = useState({
         name: '',
         description: '',
@@ -34,6 +35,12 @@ const ProductManagement = () => {
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState('');
     const [success, setSuccess] = useState('');
+
+    useEffect(() => {
+        getCategories({ page_size: 100 })
+            .then(data => setCategories(data.results || data))
+            .catch(() => { });
+    }, []);
 
     // Filter products based on search
     const filteredProducts = products.filter(product =>
@@ -268,8 +275,8 @@ const ProductManagement = () => {
                                             <td className="px-6 py-4">
                                                 <span
                                                     className={`px-3 py-1 rounded-full text-xs font-semibold ${product.in_stock
-                                                            ? 'bg-green-100 text-green-700'
-                                                            : 'bg-red-100 text-red-700'
+                                                        ? 'bg-green-100 text-green-700'
+                                                        : 'bg-red-100 text-red-700'
                                                         }`}
                                                 >
                                                     {product.in_stock ? 'In Stock' : 'Out of Stock'}
@@ -385,15 +392,18 @@ const ProductManagement = () => {
                                     <label className="block text-sm font-semibold text-neutral-700 mb-2">
                                         Category *
                                     </label>
-                                    <input
-                                        type="text"
+                                    <select
                                         name="category"
                                         value={formData.category}
                                         onChange={handleInputChange}
                                         required
-                                        className="w-full px-4 py-3 rounded-xl border-2 border-neutral-200 focus:border-primary focus:ring-4 focus:ring-primary/10 outline-none transition-all"
-                                        placeholder="Enter category"
-                                    />
+                                        className="w-full px-4 py-3 rounded-xl border-2 border-neutral-200 focus:border-primary focus:ring-4 focus:ring-primary/10 outline-none transition-all bg-white"
+                                    >
+                                        <option value="">Select a category...</option>
+                                        {categories.map(cat => (
+                                            <option key={cat.id} value={cat.name}>{cat.name}</option>
+                                        ))}
+                                    </select>
                                 </div>
                             </div>
 
