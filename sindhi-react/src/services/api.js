@@ -6,11 +6,34 @@ const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000/api'
 // Create axios instance with default config
 const api = axios.create({
     baseURL: API_BASE_URL,
-    headers: {
-        'Content-Type': 'application/json',
-    },
-    timeout: 10000, // 10 seconds
+    timeout: 10000,
+    // No Content-Type default: Axios sets application/json automatically for
+    // plain-object bodies, and leaves it unset for FormData so the browser
+    // can inject the correct multipart/form-data boundary.
 });
+
+const TOKEN_KEY = 'sindhi_admin_token';
+
+// Set or clear the DRF token used for admin write operations.
+// Token is persisted to localStorage so it survives page reloads.
+export const setAuthToken = (token) => {
+    if (token) {
+        api.defaults.headers.common['Authorization'] = `Token ${token}`;
+        localStorage.setItem(TOKEN_KEY, token);
+    } else {
+        delete api.defaults.headers.common['Authorization'];
+        localStorage.removeItem(TOKEN_KEY);
+    }
+};
+
+// Restore token from localStorage on app start (before verifyAdminSession).
+export const restoreAuthToken = () => {
+    const token = localStorage.getItem(TOKEN_KEY);
+    if (token) {
+        api.defaults.headers.common['Authorization'] = `Token ${token}`;
+    }
+    return token;
+};
 
 // Request interceptor for logging (development only)
 if (import.meta.env.DEV) {
@@ -170,6 +193,9 @@ export const getOrder = async (orderNumber) => {
 export const adminLogin = async (username, password) => {
     try {
         const response = await api.post('/admin/login/', { username, password });
+        if (response.data.token) {
+            setAuthToken(response.data.token);
+        }
         return response.data;
     } catch (error) {
         if (error.response?.data) {
@@ -180,21 +206,23 @@ export const adminLogin = async (username, password) => {
 };
 
 /**
- * Admin logout
+ * Admin logout — deletes token on server and clears it locally.
  */
 export const adminLogout = async () => {
     try {
-        const response = await api.post('/admin/logout/');
-        return response.data;
+        await api.post('/admin/logout/');
     } catch (error) {
-        throw new Error('Failed to logout');
+        // clear locally even if server call fails
+    } finally {
+        setAuthToken(null);
     }
 };
 
 /**
- * Verify admin session
+ * Verify admin token — restores token from localStorage before calling.
  */
 export const verifyAdminSession = async () => {
+    restoreAuthToken();
     try {
         const response = await api.get('/admin/verify/');
         return response.data;
@@ -211,11 +239,8 @@ export const verifyAdminSession = async () => {
  */
 export const createProduct = async (formData) => {
     try {
-        const response = await api.post('/products/', formData, {
-            headers: {
-                'Content-Type': 'multipart/form-data',
-            },
-        });
+        // Do NOT set Content-Type — axios auto-sets multipart/form-data with boundary
+        const response = await api.post('/products/', formData);
         return response.data;
     } catch (error) {
         if (error.response?.data) {
@@ -232,11 +257,7 @@ export const createProduct = async (formData) => {
  */
 export const updateProduct = async (productId, formData) => {
     try {
-        const response = await api.patch(`/products/${productId}/`, formData, {
-            headers: {
-                'Content-Type': 'multipart/form-data',
-            },
-        });
+        const response = await api.patch(`/products/${productId}/`, formData);
         return response.data;
     } catch (error) {
         if (error.response?.data) {
@@ -267,11 +288,7 @@ export const deleteProduct = async (productId) => {
  */
 export const createCategory = async (formData) => {
     try {
-        const response = await api.post('/categories/', formData, {
-            headers: {
-                'Content-Type': 'multipart/form-data',
-            },
-        });
+        const response = await api.post('/categories/', formData);
         return response.data;
     } catch (error) {
         if (error.response?.data) {
@@ -288,11 +305,7 @@ export const createCategory = async (formData) => {
  */
 export const updateCategory = async (categoryId, formData) => {
     try {
-        const response = await api.patch(`/categories/${categoryId}/`, formData, {
-            headers: {
-                'Content-Type': 'multipart/form-data',
-            },
-        });
+        const response = await api.patch(`/categories/${categoryId}/`, formData);
         return response.data;
     } catch (error) {
         if (error.response?.data) {

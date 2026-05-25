@@ -251,7 +251,7 @@ const ProductsPage = () => {
                                                 <button
                                                     onClick={() => addToCart(product)}
                                                     className="w-8 h-8 flex items-center justify-center bg-primary text-white rounded-full hover:bg-primary-600 transition-colors shadow-sm"
-                                                    disabled={!product.inStock}
+                                                    disabled={!product.in_stock}
                                                 >
                                                     +
                                                 </button>

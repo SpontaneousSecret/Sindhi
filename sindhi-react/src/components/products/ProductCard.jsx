@@ -15,7 +15,7 @@ const ProductCard = ({ product }) => {
                 </span>
 
                 <img
-                    src={`/assets/${product.image.split('/').pop()}`}
+                    src={product.image && product.image.startsWith('http') ? product.image : `/assets/${(product.image || 'namkeen.png').split('/').pop()}`}
                     alt={product.name}
                     className="w-full h-full object-cover transform group-hover:scale-110 transition-transform duration-700 ease-in-out"
                     loading="lazy"

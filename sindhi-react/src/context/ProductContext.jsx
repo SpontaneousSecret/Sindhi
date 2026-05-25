@@ -19,6 +19,37 @@ export const ProductProvider = ({ children }) => {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
 
+    // Category-specific fallback images (used when a product has no uploaded image)
+    const categoryImageMap = {
+        'Chana': '/assets/chana.png',
+        'Chana & Peanut': '/assets/chana.png',
+        'Moongfali Roasted': '/assets/chana.png',
+        'Chips & Wafers': '/assets/chips.png',
+        'Roasted Chips': '/assets/chips.png',
+        'Fryums': '/assets/fryums.png',
+        'Gachak & Laddoo': '/assets/gachak.png',
+        'Golgappe': '/assets/golgappe.png',
+        'Healthy Snacks': '/assets/healthy.png',
+        'Premium Snacks': '/assets/healthy.png',
+        'Imported Dates': '/assets/dates.png',
+        'Jaggery': '/assets/jaggery.png',
+        'Khakhra': '/assets/khakhra.png',
+        'Makhana': '/assets/makhana.png',
+        'Mouth Freshener': '/assets/mouth_freshener.png',
+        'Papad & Badiya': '/assets/papad.png',
+        'Special Achar (Pickle)': '/assets/achar.png',
+        'Special Cookies': '/assets/cookies.png',
+        'Special Matthi': '/assets/matthi.png',
+        'Spices (Masale)': '/assets/spices.png',
+        'Seeds': '/assets/seeds.png',
+        'Dry Fruit': '/assets/dryfruits.png',
+        'Important Dry Fruits': '/assets/dryfruits.png',
+        'Imported Dry Fruit': '/assets/dryfruits.png',
+        'Namkeen': '/assets/namkeen.png',
+        'Regular Namkeen': '/assets/namkeen.png',
+        'Navratra Special': '/assets/namkeen.png',
+    };
+
     // Fetch Products from API
     const fetchProducts = async () => {
         try {
@@ -37,7 +68,7 @@ export const ProductProvider = ({ children }) => {
                 price: parseFloat(product.price),
                 effectivePrice: parseFloat(product.effective_price),
                 discount: parseFloat(product.effective_discount),
-                image: product.image_url || '/assets/namkeen.png',
+                image: product.image_url || categoryImageMap[product.category_name] || '/assets/namkeen.png',
                 description: product.short_description || '',
                 in_stock: product.in_stock,
                 stock_quantity: product.stock_quantity,
@@ -211,11 +242,9 @@ export const ProductProvider = ({ children }) => {
     const logout = async () => {
         try {
             await apiAdminLogout();
-            setIsAdmin(false);
-            setAdminUser(null);
         } catch (error) {
             console.error('Logout failed:', error);
-            // Clear local state even if API call fails
+        } finally {
             setIsAdmin(false);
             setAdminUser(null);
         }
