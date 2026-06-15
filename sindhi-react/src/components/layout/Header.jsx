@@ -13,7 +13,8 @@ const Header = ({ toggleCart }) => {
         { name: 'Home', path: '/' },
         { name: 'Products', path: '/products' },
         { name: 'About', path: '/#about' },
-        { name: 'Contact', path: '/#contact' }
+        { name: 'Contact', path: '/#contact' },
+        { name: 'Refunds', path: '/cancellation-refund' },
     ];
 
     const handleNavClick = (path) => {

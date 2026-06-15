@@ -12,6 +12,8 @@ import CategoryManagement from './pages/admin/CategoryManagement';
 import OrderManagement from './pages/admin/OrderManagement';
 import FestiveOffers from './pages/admin/FestiveOffers';
 import PrivacyPolicyPage from './pages/PrivacyPolicyPage';
+import TermsAndConditionsPage from './pages/TermsAndConditionsPage';
+import CancellationRefundPage from './pages/CancellationRefundPage';
 import ProtectedRoute from './components/admin/ProtectedRoute';
 
 function App() {
@@ -24,6 +26,8 @@ function App() {
           <Route path="/products" element={<Layout><ProductsPage /></Layout>} />
           <Route path="/checkout" element={<Layout><CheckoutPage /></Layout>} />
           <Route path="/privacy-policy" element={<Layout><PrivacyPolicyPage /></Layout>} />
+          <Route path="/terms-and-conditions" element={<Layout><TermsAndConditionsPage /></Layout>} />
+          <Route path="/cancellation-refund" element={<Layout><CancellationRefundPage /></Layout>} />
 
           {/* Admin Login (No Layout) */}
           <Route path="/admin" element={<AdminLogin />} />
