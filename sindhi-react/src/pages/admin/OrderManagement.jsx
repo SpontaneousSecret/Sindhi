@@ -91,6 +91,11 @@ const OrderManagement = () => {
         return () => clearTimeout(timer);
     }, [fetchOrders]);
 
+    useEffect(() => {
+        const interval = setInterval(fetchOrders, 15000);
+        return () => clearInterval(interval);
+    }, [fetchOrders]);
+
     const openDetail = (order) => {
         setSelectedOrder(order);
         setNewStatus(order.status);
