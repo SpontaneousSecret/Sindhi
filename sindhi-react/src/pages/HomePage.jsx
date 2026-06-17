@@ -51,7 +51,7 @@ const HomePage = () => {
                 {/* Background Image & Gradient */}
                 <div
                     className="absolute inset-0 z-0 bg-cover bg-center opacity-40 transform transition-transform duration-[30s] ease-linear hover:scale-105"
-                    style={{ backgroundImage: "url('/assets/hero.png')" }}
+                    style={{ backgroundImage: `url('${import.meta.env.VITE_CDN_URL || ''}/assets/hero.png')` }}
                 />
                 <div className="absolute inset-0 z-0 bg-gradient-to-b from-[#1a1412]/70 via-[#1a1412]/40 to-[#1a1412]/80" />
 

@@ -70,7 +70,7 @@ const Layout = ({ children }) => {
                                         <div key={item.cartKey} className="flex gap-4 p-3 bg-gray-50 rounded-xl border border-gray-100">
                                             <div className="w-20 h-20 bg-white rounded-lg p-2 flex-shrink-0">
                                                 <img
-                                                    src={`/assets/${item.image.split('/').pop()}`}
+                                                    src={item.image}
                                                     alt={item.displayName || item.name}
                                                     className="w-full h-full object-contain"
                                                 />
