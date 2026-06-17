@@ -197,6 +197,20 @@ export const getOrders = async (params = {}) => {
 };
 
 /**
+ * Cancel a pending order within the 5-minute window (public)
+ * @param {string} orderNumber
+ */
+export const cancelOrder = async (orderNumber) => {
+    try {
+        const response = await api.post(`/orders/${orderNumber}/cancel/`);
+        return response.data;
+    } catch (error) {
+        if (error.response?.data) throw error.response.data;
+        throw new Error('Failed to cancel order');
+    }
+};
+
+/**
  * Update order status / admin notes — admin only
  * @param {string} orderNumber
  * @param {Object} data - { status, admin_notes, delivery_date }

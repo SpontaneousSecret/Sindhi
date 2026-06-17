@@ -1,7 +1,8 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useProductContext } from '../context/ProductContext';
 import { Link, useNavigate } from 'react-router-dom';
-import { ChevronLeft, MapPin, Clock, CreditCard, CheckCircle } from 'lucide-react';
+import { ChevronLeft, MapPin, Clock, CreditCard, CheckCircle, XCircle } from 'lucide-react';
+import { cancelOrder } from '../services/api';
 
 const CheckoutPage = () => {
     const { cart, cartTotal, checkout } = useProductContext();
@@ -22,6 +23,12 @@ const CheckoutPage = () => {
     const [deliveryType, setDeliveryType] = useState('standard_3');
     const [orderPlaced, setOrderPlaced] = useState(false);
     const [orderNumber, setOrderNumber] = useState('');
+    const [cancellableUntil, setCancellableUntil] = useState(null);
+    const [secondsLeft, setSecondsLeft] = useState(0);
+    const [isCancelling, setIsCancelling] = useState(false);
+    const [isCancelled, setIsCancelled] = useState(false);
+    const [cancelError, setCancelError] = useState(null);
+    const timerRef = useRef(null);
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [error, setError] = useState(null);
 
@@ -80,6 +87,7 @@ const CheckoutPage = () => {
 
             if (result.success) {
                 setOrderNumber(result.order.order_number);
+                setCancellableUntil(result.order.cancellable_until);
                 setOrderPlaced(true);
             } else {
                 // Handle validation errors
@@ -100,6 +108,38 @@ const CheckoutPage = () => {
         }
     };
 
+    useEffect(() => {
+        if (!cancellableUntil) return;
+        const tick = () => {
+            const secs = Math.max(0, Math.floor((new Date(cancellableUntil) - Date.now()) / 1000));
+            setSecondsLeft(secs);
+            if (secs === 0) clearInterval(timerRef.current);
+        };
+        tick();
+        timerRef.current = setInterval(tick, 1000);
+        return () => clearInterval(timerRef.current);
+    }, [cancellableUntil]);
+
+    const handleCancelOrder = async () => {
+        setIsCancelling(true);
+        setCancelError(null);
+        try {
+            await cancelOrder(orderNumber);
+            setIsCancelled(true);
+            clearInterval(timerRef.current);
+        } catch (err) {
+            setCancelError(err?.error || 'Failed to cancel order. Please try again.');
+        } finally {
+            setIsCancelling(false);
+        }
+    };
+
+    const formatCountdown = (secs) => {
+        const m = Math.floor(secs / 60).toString().padStart(2, '0');
+        const s = (secs % 60).toString().padStart(2, '0');
+        return `${m}:${s}`;
+    };
+
     if (cart.length === 0 && !orderPlaced) {
         return (
             <div className="min-h-screen bg-neutral-50 pt-24 pb-12 flex flex-col items-center justify-center">
@@ -113,15 +153,52 @@ const CheckoutPage = () => {
         return (
             <div className="min-h-screen bg-neutral-50 pt-24 pb-12 flex items-center justify-center px-4">
                 <div className="bg-white p-8 rounded-2xl shadow-xl max-w-md w-full text-center">
-                    <div className="w-16 h-16 bg-green-100 text-green-600 rounded-full flex items-center justify-center mx-auto mb-4">
-                        <CheckCircle size={32} />
-                    </div>
-                    <h2 className="text-2xl font-bold text-neutral-800 mb-2">Order Placed Successfully!</h2>
-                    <p className="text-neutral-600 mb-4">Thank you for your order, {formData.name}!</p>
-                    <p className="text-sm text-neutral-500 mb-6">Order Number: <strong>{orderNumber}</strong></p>
-                    <Link to="/" className="block w-full bg-primary text-white py-3 rounded-xl font-bold hover:bg-primary-600 transition-colors">
-                        Continue Shopping
-                    </Link>
+                    {isCancelled ? (
+                        <>
+                            <div className="w-16 h-16 bg-red-100 text-red-500 rounded-full flex items-center justify-center mx-auto mb-4">
+                                <XCircle size={32} />
+                            </div>
+                            <h2 className="text-2xl font-bold text-neutral-800 mb-2">Order Cancelled</h2>
+                            <p className="text-neutral-600 mb-4">Your order <strong>{orderNumber}</strong> has been cancelled and stock has been restored.</p>
+                            <Link to="/products" className="block w-full bg-primary text-white py-3 rounded-xl font-bold hover:bg-primary-600 transition-colors">
+                                Back to Shop
+                            </Link>
+                        </>
+                    ) : (
+                        <>
+                            <div className="w-16 h-16 bg-green-100 text-green-600 rounded-full flex items-center justify-center mx-auto mb-4">
+                                <CheckCircle size={32} />
+                            </div>
+                            <h2 className="text-2xl font-bold text-neutral-800 mb-2">Order Placed Successfully!</h2>
+                            <p className="text-neutral-600 mb-4">Thank you for your order, {formData.name}!</p>
+                            <p className="text-sm text-neutral-500 mb-6">Order Number: <strong>{orderNumber}</strong></p>
+
+                            {secondsLeft > 0 ? (
+                                <div className="mb-6">
+                                    <p className="text-sm text-neutral-500 mb-2">Changed your mind? You can cancel within:</p>
+                                    <div className="inline-block bg-amber-50 border border-amber-200 text-amber-700 font-mono text-2xl font-bold px-6 py-3 rounded-xl mb-3">
+                                        {formatCountdown(secondsLeft)}
+                                    </div>
+                                    {cancelError && (
+                                        <p className="text-sm text-red-500 mb-2">{cancelError}</p>
+                                    )}
+                                    <button
+                                        onClick={handleCancelOrder}
+                                        disabled={isCancelling}
+                                        className="block w-full border border-red-300 text-red-600 py-2.5 rounded-xl font-semibold hover:bg-red-50 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                                    >
+                                        {isCancelling ? 'Cancelling...' : 'Cancel This Order'}
+                                    </button>
+                                </div>
+                            ) : (
+                                <p className="text-sm text-neutral-400 mb-6">Cancellation window has expired.</p>
+                            )}
+
+                            <Link to="/" className="block w-full bg-primary text-white py-3 rounded-xl font-bold hover:bg-primary-600 transition-colors">
+                                Continue Shopping
+                            </Link>
+                        </>
+                    )}
                 </div>
             </div>
         );
