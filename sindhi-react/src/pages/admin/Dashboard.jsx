@@ -92,7 +92,7 @@ const AdminDashboard = () => {
             <div className="space-y-8">
                 {/* Welcome Section */}
                 <div className="bg-gradient-to-r from-primary to-orange-600 rounded-2xl p-8 text-white shadow-xl">
-                    <h1 className="text-3xl font-bold mb-2">Welcome to Admin Dashboard</h1>
+                    <h1 className="text-3xl font-bold mb-2 text-white">Welcome to Admin Dashboard</h1>
                     <p className="text-white/90">Manage your Sindhi Namkeen store efficiently</p>
                 </div>
 
